@@ -1,0 +1,9 @@
+.idea/
+_pycache_/
+__pycache__/
+.vscode/
+Lib/
+Scripts/
+pyvenv.cfg
+.env
+setup.py
