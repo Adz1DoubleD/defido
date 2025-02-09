@@ -2,13 +2,11 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 
 from datetime import datetime, timedelta
-import locale
 
 from bot import constants
 from hooks import api, tools
 from media import images
 
-locale.setlocale(locale.LC_ALL, "")
 
 coingecko = api.CoinGecko()
 dextools = api.Dextools()
@@ -291,7 +289,6 @@ async def liquidity(update: Update, context: ContextTypes.DEFAULT_TYPE):
     liq = 0
     total_token = 0
     total_eth = 0
-    formatted_total_token = ""
 
     if isinstance(constants.PAIR, list):
         for pair in constants.PAIR:
@@ -302,14 +299,10 @@ async def liquidity(update: Update, context: ContextTypes.DEFAULT_TYPE):
             total_token += token_liq
             total_eth += weth_liq
             dex = dextools.get_dex(pair)
-            formatted_token_liq = locale.format_string("%.0f", token_liq, grouping=True)
-
-            if token_liq >= 1_000_000:
-                formatted_token_liq = f"{token_liq / 1_000_000:.1f}M"
 
             liq_text += (
                 f"{dex} pair\n"
-                f"{formatted_token_liq} {constants.TICKER.upper()}\n"
+                f"{token_liq:,.0f} {constants.TICKER.upper()}\n"
                 f"{weth_liq:.2f} {constants.CHAIN_NATIVE.upper()}\n\n"
             )
 
@@ -321,13 +314,9 @@ async def liquidity(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 ]
             )
 
-        formatted_total_token = locale.format_string("%.0f", total_token, grouping=True)
-        if total_token >= 1_000_000:
-            formatted_total_token = f"{total_token / 1_000_000:.1f}M"
-
         total_liquidity_info = (
             f"Total Liquidity\n"
-            f"{formatted_total_token} {constants.TICKER}\n"
+            f"{total_token:,.0f} {constants.TICKER}\n"
             f"{total_eth:.2f} {constants.CHAIN_NATIVE}\n"
         )
 
@@ -336,15 +325,11 @@ async def liquidity(update: Update, context: ContextTypes.DEFAULT_TYPE):
         token_liq = float(liquidity_data["mainToken"])
         weth_liq = float(liquidity_data["sideToken"])
         liq = liquidity_data["liquidity"]
-        formatted_token_liq = locale.format_string("%.0f", token_liq, grouping=True)
-
-        if token_liq >= 1_000_000:
-            formatted_token_liq = f"{token_liq / 1_000_000:.1f}M"
 
         dex = dextools.get_dex(constants.PAIR)
         liq_text += (
             f"{dex} pair\n"
-            f"{formatted_token_liq} {constants.TICKER.upper()}\n"
+            f"{token_liq:,.0f} {constants.TICKER.upper()}\n"
             f"{weth_liq:.5f} {constants.CHAIN_NATIVE.upper()}\n\n"
         )
 
@@ -364,7 +349,7 @@ async def liquidity(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_photo(
         photo=tools.get_logo(),
         caption=f"*{constants.PROJECT_NAME} Liquidity*\n\n"
-        f"Total Supply: {constants.SUPPLY}\n\n"
+        f"Total Supply: {constants.SUPPLY:,.0f}\n\n"
         f"{liq_text}"
         f"{total_liquidity_info}"
         f"${'{:0,.0f}'.format(liq)}",
