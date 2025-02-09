@@ -2,7 +2,9 @@ from telegram import Message, Update
 from telegram.ext import ApplicationBuilder, CallbackContext, CommandHandler
 
 from pathlib import Path
-import sys, subprocess, os
+import sys
+import subprocess
+import os
 
 from bot.commands import custom, project, utility
 

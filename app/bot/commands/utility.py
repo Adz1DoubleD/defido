@@ -1,14 +1,18 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, ContextTypes
 
-import io, random, pytz, re, requests, time
+import io
+import random
+import pytz
+import re
+import requests
+import time
 from datetime import datetime
 from bot import constants
 from pyfiglet import Figlet
 from gtts import gTTS
 
 from hooks import api, tools
-from media import images
 
 etherscan = api.Etherscan()
 
@@ -17,7 +21,7 @@ async def ascii(update: Update, context: ContextTypes.DEFAULT_TYPE):
     input_text = " ".join(context.args).upper()
     if input_text == "":
         await update.message.reply_text(
-            f"Please follow the command with the word you want to use",
+            "Please follow the command with the word you want to use",
             parse_mode="Markdown",
         )
     else:
@@ -37,7 +41,7 @@ async def blocks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     blocks_time = etherscan.get_block(now)
     await update.message.reply_photo(
         photo=tools.get_logo(),
-        caption=f"*Latest {constants.CHAIN.upper()} Block *\n\n" f"{blocks_time}\n\n",
+        caption=f"*Latest {constants.CHAIN.upper()} Block *\n\n{blocks_time}\n\n",
         parse_mode="Markdown",
     )
 
@@ -106,10 +110,10 @@ async def fg(update: Update, context: ContextTypes.DEFAULT_TYPE):
     hours, remainder = divmod(remainder, 3600)
     minutes, _ = divmod(remainder, 60)
     caption = "*Market Fear and Greed Index*\n\n"
-    caption += f'{fear_values[0][0]} - {fear_values[0][1]} - {fear_values[0][2].strftime("%B %d")}\n\n'
+    caption += f"{fear_values[0][0]} - {fear_values[0][1]} - {fear_values[0][2].strftime('%B %d')}\n\n"
     caption += "Change:\n"
     for i in range(1, 7):
-        caption += f'{fear_values[i][0]} - {fear_values[i][1]} - {fear_values[i][2].strftime("%B %d")}\n'
+        caption += f"{fear_values[i][0]} - {fear_values[i][1]} - {fear_values[i][2].strftime('%B %d')}\n"
     caption += "\nNext Update:\n"
     caption += f"{int(hours)} hours and {int(minutes)} minutes"
     await update.message.reply_photo(
@@ -124,15 +128,15 @@ async def gas(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_photo(
         photo=tools.get_logo(),
         caption=f"*ETH Gas Prices:*\n\n"
-        f'Low: {gas_data["result"]["SafeGasPrice"]} Gwei\n'
-        f'Average: {gas_data["result"]["ProposeGasPrice"]} Gwei\n'
-        f'High: {gas_data["result"]["FastGasPrice"]} Gwei\n\n',
+        f"Low: {gas_data['result']['SafeGasPrice']} Gwei\n"
+        f"Average: {gas_data['result']['ProposeGasPrice']} Gwei\n"
+        f"High: {gas_data['result']['FastGasPrice']} Gwei\n\n",
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        text=f"ETH Gas Tracker", url="https://etherscan.io/gastracker"
+                        text="ETH Gas Tracker", url="https://etherscan.io/gastracker"
                     )
                 ]
             ]
@@ -146,14 +150,14 @@ async def joke(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if joke["type"] == "single":
         await update.message.reply_photo(
             photo=tools.get_logo(),
-            caption=f"{constants.PROJECT_NAME} Joke\n\n" f'{joke["joke"]}\n\n',
+            caption=f"{constants.PROJECT_NAME} Joke\n\n{joke['joke']}\n\n",
             parse_mode="Markdown",
         )
     else:
         await update.message.reply_photo(
             photo=tools.get_logo(),
             caption=f"{constants.PROJECT_NAME} Joke\n\n"
-            f'{joke["setup"]}\n\n{joke["delivery"]}\n\n',
+            f"{joke['setup']}\n\n{joke['delivery']}\n\n",
             parse_mode="Markdown",
         )
 
@@ -262,7 +266,7 @@ async def time_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 time_info += f"{tz_time.strftime('%I:%M %p')} - {tz_name}\n"
             await update.message.reply_photo(
                 photo=tools.get_logo(),
-                caption=f"*{constants.PROJECT_NAME} World Time*\n\n" f"{time_info}",
+                caption=f"*{constants.PROJECT_NAME} World Time*\n\n{time_info}",
                 parse_mode="Markdown",
             )
             return
@@ -275,7 +279,7 @@ async def time_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             time_info += f"{tz_time.strftime('%I:%M %p')} - {tz_name}\n"
         await update.message.reply_photo(
             photo=tools.get_logo(),
-            caption=f"*{constants.PROJECT_NAME} World Time*\n\n" f"{time_info}\n\n",
+            caption=f"*{constants.PROJECT_NAME} World Time*\n\n{time_info}\n\n",
             parse_mode="Markdown",
         )
     except Exception:
@@ -324,7 +328,7 @@ async def today(update: Update, context: ContextTypes.DEFAULT_TYPE):
     today = random.choice(data["data"]["Events"])
     await update.message.reply_photo(
         photo=tools.get_logo(),
-        caption=f'*{constants.PROJECT_NAME} OTD*\n\nOn this day in {today["year"]}:\n\n{today["text"]}\n\n',
+        caption=f"*{constants.PROJECT_NAME} OTD*\n\nOn this day in {today['year']}:\n\n{today['text']}\n\n",
         parse_mode="Markdown",
     )
 
@@ -350,7 +354,7 @@ async def word(update: Update, context: ContextTypes.DEFAULT_TYPE):
         word = " ".join(context.args).lower()
         if word == "":
             await update.message.reply_text(
-                f"Please use /word followed by the word you want to search"
+                "Please use /word followed by the word you want to search"
             )
             return
 
@@ -369,5 +373,5 @@ async def word(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="Markdown",
             reply_markup=keyboard_markup,
         )
-    except Exception as e:
+    except Exception:
         await update.message.reply_text("Word not found")

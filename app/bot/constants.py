@@ -1,5 +1,4 @@
 from datetime import datetime
-import random
 
 ## PROJECT CONSTANTS
 PROJECT_NAME = "DeFido"

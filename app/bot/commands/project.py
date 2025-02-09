@@ -36,7 +36,7 @@ async def burn(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_photo(
         photo=tools.get_logo(),
         caption=f"*{constants.PROJECT_NAME} Burn Wallet* \n\n"
-        f'{"{:0,.0f}".format(float(burn))} (${"{:0,.0f}".format(float(burn_dollar))})\n'
+        f"{'{:0,.0f}'.format(float(burn))} (${'{:0,.0f}'.format(float(burn_dollar))})\n"
         f"{percent}% of Supply\n\n",
         parse_mode="markdown",
         reply_markup=InlineKeyboardMarkup(
@@ -67,7 +67,7 @@ async def buy(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [
                 [
                     InlineKeyboardButton(
-                        text=f"Buy On Uniswap",
+                        text="Buy On Uniswap",
                         url=f"https://app.uniswap.org/#/swap?chain={constants.CHAIN}&outputCurrency={constants.CA}",
                     )
                 ]
@@ -106,7 +106,7 @@ async def chart(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [
                 [
                     InlineKeyboardButton(
-                        text=f"📈 Chart", url=f"{constants.CHART_LINK}{constants.CA}"
+                        text="📈 Chart", url=f"{constants.CHART_LINK}{constants.CA}"
                     )
                 ]
             ]
@@ -146,11 +146,11 @@ async def compare(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     photo=tools.get_logo(),
                     caption=f"*{constants.PROJECT_NAME} Market Cap Comparison*\n\n"
                     f"{context.args[0].upper()} Market Cap:\n"
-                    f'${"{:,.2f}".format(token_mcap)}\n\n'
+                    f"${'{:,.2f}'.format(token_mcap)}\n\n"
                     f"Token value of {constants.TICKER} at {context.args[0].upper()} Market Cap:\n"
-                    f'${"{:,.2f}".format(token_value)}\n'
-                    f'{"{:,.0f}%".format(percent)}\n'
-                    f'{"{:,.0f}x".format(x)}',
+                    f"${'{:,.2f}'.format(token_value)}\n"
+                    f"{'{:,.0f}%'.format(percent)}\n"
+                    f"{'{:,.0f}x'.format(x)}",
                     parse_mode="Markdown",
                 )
         else:
@@ -158,7 +158,7 @@ async def compare(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 photo=tools.get_logo(),
                 caption="Please follow the command with the name of the token you want to compare with",
             )
-    except Exception as e:
+    except Exception:
         await update.message.reply_text("Comparison not avaliable, please try again.")
 
 
@@ -257,7 +257,7 @@ async def holders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     holders = info["holders"]
     await update.message.reply_photo(
         photo=tools.get_logo(),
-        caption=f"*{constants.PROJECT_NAME} Holders*\n\n" f"{holders}\n\n",
+        caption=f"*{constants.PROJECT_NAME} Holders*\n\n{holders}\n\n",
         parse_mode="Markdown",
     )
 
@@ -270,7 +270,7 @@ async def launch(update: Update, context: ContextTypes.DEFAULT_TYPE):
         photo=images.launch,
         caption=(
             f"*DeFido Launch*\n\n"
-            f'{constants.LAUNCH.strftime("%A %B %d %Y %I:%M %p")} UTC\n\n'
+            f"{constants.LAUNCH.strftime('%A %B %d %Y %I:%M %p')} UTC\n\n"
             f"{days} days, {hours} hours and {minutes} minutes {footer}"
         ),
         parse_mode="Markdown",
@@ -357,9 +357,9 @@ async def liquidity(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         )
 
-        total_liquidity_info = f"Total Liquidity\n"
+        total_liquidity_info = "Total Liquidity\n"
 
-    buttons.append([InlineKeyboardButton(text=f"Lock TX", url=f"{constants.LOCK_TX}")])
+    buttons.append([InlineKeyboardButton(text="Lock TX", url=f"{constants.LOCK_TX}")])
 
     await update.message.reply_photo(
         photo=tools.get_logo(),
@@ -367,7 +367,7 @@ async def liquidity(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Total Supply: {constants.SUPPLY}\n\n"
         f"{liq_text}"
         f"{total_liquidity_info}"
-        f'${"{:0,.0f}".format(liq)}',
+        f"${'{:0,.0f}'.format(liq)}",
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(buttons),
     )
@@ -389,7 +389,7 @@ async def mcap(update: Update, context: ContextTypes.DEFAULT_TYPE):
         formatted_mcap = "N/A"
     await update.message.reply_photo(
         photo=tools.get_logo(),
-        caption=f"*{constants.PROJECT_NAME} Market Cap*\n\n" f"{formatted_mcap}\n\n",
+        caption=f"*{constants.PROJECT_NAME} Market Cap*\n\n{formatted_mcap}\n\n",
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup(
             [
@@ -409,7 +409,7 @@ async def media_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_photo(
         photo=tools.get_logo(),
-        caption=f"*{constants.PROJECT_NAME} Media*\n\n" f"{constants.MEDIA_LINK}",
+        caption=f"*{constants.PROJECT_NAME} Media*\n\n{constants.MEDIA_LINK}",
         parse_mode="Markdown",
     )
 
@@ -453,13 +453,13 @@ async def nft(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 [
                     [
                         InlineKeyboardButton(
-                            text=f"Rarible",
+                            text="Rarible",
                             url=f"https://rarible.com/collection/{constants.CHAIN}/{constants.NFT_ADDRESS}/items",
                         )
                     ],
                     [
                         InlineKeyboardButton(
-                            text=f"Opensea",
+                            text="Opensea",
                             url=f"https://opensea.io/collection/{constants.NFT_SLUG}",
                         )
                     ],
@@ -558,7 +558,7 @@ async def tax(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     await update.message.reply_photo(
         photo=tools.get_logo(),
-        caption=f"*{constants.PROJECT_NAME} Tax*\n\n" f"{constants.TAX}\n\n",
+        caption=f"*{constants.PROJECT_NAME} Tax*\n\n{constants.TAX}\n\n",
         parse_mode="Markdown",
     )
 
@@ -585,7 +585,7 @@ async def treasury(update: Update, context: ContextTypes.DEFAULT_TYPE):
         photo=tools.get_logo(),
         caption=f"*{constants.PROJECT_NAME} Treasury*\n\n"
         f"{txs} tx's in the last 24 hours\n\n"
-        f'{eth} {constants.CHAIN_NATIVE.upper()} (${"{:0,.0f}".format(eth_dollar)})\n'
+        f"{eth} {constants.CHAIN_NATIVE.upper()} (${'{:0,.0f}'.format(eth_dollar)})\n"
         f"{balance:,.0f} {constants.TICKER} {percent}% (${'{:0,.0f}'.format(token_dollar)})\n\n"
         f"Total: ${total:,.0f}",
         parse_mode="Markdown",
@@ -612,11 +612,11 @@ async def wallet(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return
     if len(context.args) == 0:
-        await update.message.reply_text(f"Please use /wallet [wallet_address]")
+        await update.message.reply_text("Please use /wallet [wallet_address]")
         return
     wallet = context.args[0]
     if not wallet.startswith("0x"):
-        await update.message.reply_text(f"Please use /wallet [wallet_address]")
+        await update.message.reply_text("Please use /wallet [wallet_address]")
         return
     native_price = etherscan.get_native_price(constants.CHAIN_NATIVE.lower())
     eth = etherscan.get_native_balance(wallet, constants.CHAIN)

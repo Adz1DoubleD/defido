@@ -1,5 +1,6 @@
 from datetime import datetime
-import random, requests
+import random
+import requests
 
 from media import images
 

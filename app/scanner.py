@@ -1,7 +1,12 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from bot import constants
-import asyncio, json, os, threading, time, websocket
+import asyncio
+import json
+import os
+import threading
+import time
+import websocket
 from datetime import datetime
 
 from hooks import api
@@ -35,7 +40,7 @@ def sell(data):
                     ],
                     [
                         InlineKeyboardButton(
-                            text=f"Opensea",
+                            text="Opensea",
                             url=f"{image}",
                         )
                     ],
@@ -68,7 +73,7 @@ def listing(data):
                 [
                     [
                         InlineKeyboardButton(
-                            text=f"Opensea",
+                            text="Opensea",
                             url=f"{image}",
                         )
                     ],
@@ -122,7 +127,7 @@ def start(ws):
             )
         )
         threading.Thread(target=send, args=(ws,), daemon=True).start()
-    except Exception as e:
+    except Exception:
         run()
 
 
@@ -136,7 +141,7 @@ def run():
             )
             ws.on_open = start
             ws.run_forever()
-        except Exception as e:
+        except Exception:
             time.sleep(10)
 
 

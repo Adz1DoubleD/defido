@@ -9,7 +9,7 @@ dextools = api.Dextools()
 
 
 BRIDGE_TEXT = (
-    f"*BASE Bridges*\n\n"
+    "*BASE Bridges*\n\n"
     "- [Official Base Bridge](https://bridge.base.org/deposit)\n"
     "- [HoudiniSwap](http://www.houdiniswap.com/)\n"
     "- [Synapse Protocol](https://synapseprotocol.com/?fromChainId=1&toChainId=8453)\n"
@@ -36,7 +36,7 @@ RPC_TEXT = (
 async def bridge(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_photo(
         photo=tools.get_logo(),
-        caption=f"*{constants.PROJECT_NAME} Guides*\n\n" f"{BRIDGE_TEXT}",
+        caption=f"*{constants.PROJECT_NAME} Guides*\n\n{BRIDGE_TEXT}",
         parse_mode="Markdown",
     )
 
@@ -44,9 +44,7 @@ async def bridge(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_photo(
         photo=tools.get_logo(),
-        caption=f"*{constants.PROJECT_NAME} Guides*\n\n"
-        f"{RPC_TEXT}\n\n"
-        f"{BRIDGE_TEXT}",
+        caption=f"*{constants.PROJECT_NAME} Guides*\n\n{RPC_TEXT}\n\n{BRIDGE_TEXT}",
         parse_mode="Markdown",
     )
 
@@ -54,6 +52,6 @@ async def guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def rpc(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_photo(
         photo=tools.get_logo(),
-        caption=f"*{constants.PROJECT_NAME} Guides*\n\n" f"{RPC_TEXT}",
+        caption=f"*{constants.PROJECT_NAME} Guides*\n\n{RPC_TEXT}",
         parse_mode="Markdown",
     )

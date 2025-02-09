@@ -1,11 +1,13 @@
-import os, requests, time
+import os
+import requests
+import time
 
 from bot import constants
 
 
 class CoinGecko:
     def __init__(self):
-        self.url = f"https://api.coingecko.com/api/v3/"
+        self.url = "https://api.coingecko.com/api/v3/"
 
     def search(self, token):
         endpoint = f"search?query={token}"
@@ -50,7 +52,7 @@ class Dextools:
 
         if response.status_code == 200:
             data = response.json()
-            if data["data"] != None:
+            if data["data"] is not None:
                 price = data["data"]["price"]
                 if "e-" in str(price):
                     price = "{:.8f}".format(price)
@@ -82,14 +84,13 @@ class Dextools:
 
                 return price, change
             else:
-                change = f"1HR Change: N/A\n6HR Change: N/A\n24HR Change: N/A"
+                change = "1HR Change: N/A\n6HR Change: N/A\n24HR Change: N/A"
                 return None, change
         else:
-            change = f"1HR Change: N/A\n6HR Change: N/A\n24HR Change: N/A"
+            change = "1HR Change: N/A\n6HR Change: N/A\n24HR Change: N/A"
             return None, change
 
     def get_liquidity(self, pair):
-
         if isinstance(pair, list):
             total_liquidity = {"mainToken": 0, "sideToken": 0, "liquidity": 0}
 
@@ -163,7 +164,6 @@ class Dextools:
         if isinstance(pair, list):
             total_volume = 0
             for single_pair in pair:
-
                 endpoint = f"pool/{constants.CHAIN}/{single_pair.lower()}/price"
                 response = requests.get(self.url + endpoint, headers=self.headers)
                 if response.status_code == 200:
@@ -267,7 +267,7 @@ class Etherscan:
 
 class Opensea:
     def __init__(self):
-        self.url = f"https://api.opensea.io/api/v2/"
+        self.url = "https://api.opensea.io/api/v2/"
         self.headers = {"X-API-KEY": os.getenv("OPENSEA_API_KEY")}
 
     def get_collection(self, slug):
