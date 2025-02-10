@@ -1,10 +1,10 @@
-from media import media_path
+from pathlib import Path
 
 
-discord = media_path("images/discordlogo.jpg")
-guide = media_path("images/guidelogo.jpg")
-launch = media_path("images/media/launch.jpg")
-nft = media_path("images/nft.png")
+discord = Path(__file__).resolve().parent / "discordlogo.jpg"
+guide = Path(__file__).resolve().parent / "guidelogo.jpg"
+launch = Path(__file__).resolve().parent / "launch.jpg"
+nft = Path(__file__).resolve().parent / "nft.png"
 
-## logos = [media_path(f"media/images/logo{i}.png") for i in range(1, 1)]
-logos = [media_path("images/logo1.png")]
+## logos = [Path(__file__).resolve().parent / "logo{i}.png" for i in range(1, 1)]
+logos = [Path(__file__).resolve().parent / "logo1.png"]
