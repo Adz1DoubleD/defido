@@ -2,10 +2,10 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 from bot import constants
-from hooks import api, tools
+from utils import tools
+from services import get_dextools
 
-
-dextools = api.Dextools()
+dextools = get_dextools()
 
 
 BRIDGE_TEXT = (

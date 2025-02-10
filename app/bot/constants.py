@@ -1,6 +1,5 @@
 from datetime import datetime
 
-## PROJECT CONSTANTS
 PROJECT_NAME = "DeFido"
 TICKER = "DEFIDO"
 CA = "0xD064c53f043d5aee2Ac9503B13eE012BF2def1d0"

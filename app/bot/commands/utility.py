@@ -2,19 +2,22 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, ContextTypes
 
 import io
-import random
+
 import pytz
+import random
 import re
 import requests
 import time
 from datetime import datetime
+
 from bot import constants
 from pyfiglet import Figlet
 from gtts import gTTS
 
-from hooks import api, tools
+from utils import tools
+from services import get_etherscan
 
-etherscan = api.Etherscan()
+etherscan = get_etherscan()
 
 
 async def ascii(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -297,7 +300,7 @@ async def timestamp_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         else:
             stamp = int(" ".join(context.args).lower())
-            time = api.timestamp_to_datetime(stamp)
+            time = tools.timestamp_to_datetime(stamp)
             current_time = time.time()
             timestamp_time = datetime.fromtimestamp(stamp)
             time_difference = current_time - timestamp_time

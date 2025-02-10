@@ -4,14 +4,14 @@ from telegram.ext import ContextTypes
 from datetime import datetime, timedelta
 
 from bot import constants
-from hooks import api, tools
+from utils import tools
 from media import images
+from services import get_coingecko, get_dextools, get_etherscan, get_opensea
 
-
-coingecko = api.CoinGecko()
-dextools = api.Dextools()
-etherscan = api.Etherscan()
-opensea = api.Opensea()
+coingecko = get_coingecko()
+dextools = get_dextools()
+etherscan = get_etherscan()
+opensea = get_opensea()
 
 
 async def burn(update: Update, context: ContextTypes.DEFAULT_TYPE):

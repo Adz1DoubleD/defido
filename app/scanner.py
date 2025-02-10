@@ -1,6 +1,5 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from bot import constants
 import asyncio
 import json
 import os
@@ -9,10 +8,11 @@ import time
 import websocket
 from datetime import datetime
 
-from hooks import api
+from bot import constants
 from main import application
+from services import get_etherscan
 
-etherscan = api.Etherscan()
+etherscan = get_etherscan()
 
 
 def sell(data):
