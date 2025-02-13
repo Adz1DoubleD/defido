@@ -378,3 +378,22 @@ async def word(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     except Exception:
         await update.message.reply_text("Word not found")
+
+
+HANDLERS = [
+    (func.__name__.split("_")[0], func, description)
+    for func, description in [
+        (ascii, "Create ASCII art"),
+        (blocks, "Onchain block details"),
+        (check_input, "Check an input"),
+        (fg, "Fear/Green info"),
+        (gas, "Gas info"),
+        (joke, "Random joke"),
+        (roll, "Roll a number"),
+        (say, "Text to speech"),
+        (timestamp_command, "Timestamp conversion"),
+        (today, "Today in history"),
+        (wei, "Wei conversion"),
+        (word, "Dictionary"),
+    ]
+]

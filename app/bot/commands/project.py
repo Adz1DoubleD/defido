@@ -666,3 +666,30 @@ async def website(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ),
     )
+
+
+HANDLERS = [
+    (func.__name__.split("_")[0], func, description)
+    for func, description in [
+        (burn, "Burn info"),
+        (buy, "Buy link"),
+        (ca, "Contract Address"),
+        (chart, "Chart link"),
+        (compare, "Compare with other token"),
+        (contact, "Contact info"),
+        (convert, "Convert to dollar"),
+        (daily, "Daily tasks"),
+        (discord, "Discord link"),
+        (holders, "Holders info"),
+        (launch, "Launch details"),
+        (liquidity, "Liquidity info"),
+        (media_command, "Media links"),
+        (mcap, "Market cap info"),
+        (nft, "NFT info"),
+        (tax, "Tax info"),
+        (treasury, "On chain treasury"),
+        (twitter, "Twitter link"),
+        (wallet, "Wallet info"),
+        (website, "Website link"),
+    ]
+]

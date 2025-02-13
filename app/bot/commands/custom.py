@@ -55,3 +55,13 @@ async def rpc(update: Update, context: ContextTypes.DEFAULT_TYPE):
         caption=f"*{constants.PROJECT_NAME} Guides*\n\n{RPC_TEXT}",
         parse_mode="Markdown",
     )
+
+
+HANDLERS = [
+    (func.__name__.split("_")[0], func, description)
+    for func, description in [
+        (bridge, "Bridge links"),
+        (guide, "FAQs"),
+        (rpc, "RPC info"),
+    ]
+]
