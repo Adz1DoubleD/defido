@@ -9,6 +9,8 @@ import os
 from bot.commands import custom, project, utility
 from utils import tools
 
+application = ApplicationBuilder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
+
 
 async def error(update: Update, context: CallbackContext):
     if update is None:
@@ -47,9 +49,6 @@ def init_scanner_bot():
         return process
     else:
         print(f"Error: {script_path} not found")
-
-
-application = ApplicationBuilder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
 
 
 def start():
