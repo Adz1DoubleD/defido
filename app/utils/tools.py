@@ -44,9 +44,31 @@ def get_logo():
 
 def get_today():
     now = datetime.now()
-    url = f"http://history.muffinlabs.com/date/{now.month}/{now.day}"
+    url = f"https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/{now.month}/{now.day}"
+
     response = requests.get(url)
-    return response.json()
+    data = response.json()
+
+    if (
+        "selected" in data
+        and isinstance(data["selected"], list)
+        and len(data["selected"]) > 0
+    ):
+        random_event = random.choice(data["selected"])
+
+        event_text = random_event.get("text", "No description available.")
+        year = random_event.get("year", "Unknown Year")
+
+        event_pages = random_event.get("pages", [])
+        wiki_url = (
+            event_pages[0]["content_urls"]["desktop"]["page"]
+            if event_pages
+            else "No link available."
+        )
+
+        return f"📅 *{year}*: {event_text}\n🔗 [Read more]({wiki_url})"
+
+    return "⚠️ No historical events found for today."
 
 
 def get_word(word):

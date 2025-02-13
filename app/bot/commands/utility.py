@@ -328,10 +328,9 @@ async def timestamp_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def today(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = tools.get_today()
-    today = random.choice(data["data"]["Events"])
     await update.message.reply_photo(
         photo=tools.get_logo(),
-        caption=f"*{constants.PROJECT_NAME} OTD*\n\nOn this day in {today['year']}:\n\n{today['text']}\n\n",
+        caption=f"*{constants.PROJECT_NAME} OTD*\n\n{data}\n\n",
         parse_mode="Markdown",
     )
 
