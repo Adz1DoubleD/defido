@@ -56,13 +56,7 @@ def start():
 
     if not tools.is_local():
         print("✅ Bot Running on server")
-
-        custom_commands, project_commands, utility_commands = (
-            tools.update_bot_commands()
-        )
-        print(custom_commands)
-        print(project_commands)
-        print(utility_commands)
+        print(tools.update_bot_commands())
 
         init_scanner_bot()
 

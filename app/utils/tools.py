@@ -91,54 +91,20 @@ def timestamp_to_datetime(timestamp):
 def update_bot_commands():
     url = f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/setMyCommands"
 
-    custom_commands = [
+    all_commands = [
         {
             "command": cmd[0] if isinstance(cmd, list) else cmd,
             "description": desc,
         }
-        for cmd, _, desc in custom.HANDLERS
+        for handlers in [custom.HANDLERS, project.HANDLERS, utility.HANDLERS]
+        for cmd, _, desc in handlers
     ]
 
-    project_commands = [
-        {
-            "command": cmd[0] if isinstance(cmd, list) else cmd,
-            "description": desc,
-        }
-        for cmd, _, desc in project.HANDLERS
-    ]
-
-    utility_commands = [
-        {
-            "command": cmd[0] if isinstance(cmd, list) else cmd,
-            "description": desc,
-        }
-        for cmd, _, desc in utility.HANDLERS
-    ]
-
-    custom_response = requests.post(
-        url, json={"commands": custom_commands, "scope": {"type": "default"}}
-    )
-    project_response = requests.post(
-        url, json={"commands": project_commands, "scope": {"type": "default"}}
-    )
-    utility_response = requests.post(
-        url, json={"commands": utility_commands, "scope": {"type": "default"}}
+    response = requests.post(
+        url, json={"commands": all_commands, "scope": {"type": "default"}}
     )
 
-    custom_result = (
-        "✅ Custom commands updated"
-        if custom_response.status_code == 200
-        else f"⚠️ Failed to update general commands: {custom_response.text}"
-    )
-    project_result = (
-        "✅ Project commands updated"
-        if project_response.status_code == 200
-        else f"⚠️ Failed to update project commands: {project_response.text}"
-    )
-    utility_result = (
-        "✅ Utility commands updated"
-        if utility_response.status_code == 200
-        else f"⚠️ Failed to update utility commands: {utility_response.text}"
-    )
-
-    return custom_result, project_result, utility_result
+    if response.status_code == 200:
+        return "✅ Commands updated successfully."
+    else:
+        return f"⚠️ Failed to update bot commands: {response.text}"
