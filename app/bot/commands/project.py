@@ -23,9 +23,11 @@ async def burn(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    burn = etherscan.get_token_balance(constants.DEAD, constants.CA, constants.DECIMALS)
+    burn = await etherscan.get_token_balance(
+        constants.DEAD, constants.CA, constants.DECIMALS
+    )
     percent = round(burn / constants.SUPPLY * 100, 2)
-    price, _ = dextools.get_price(constants.CA)
+    price, _ = await dextools.get_price(constants.CA)
     if price:
         price = price
     else:
@@ -123,9 +125,9 @@ async def compare(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
         if len(context.args) == 1:
             token2 = context.args[0].lower()
-            search = coingecko.search(token2)
+            search = await coingecko.search(token2)
             token_id = search["coins"][0]["api_symbol"]
-            token_mcap = coingecko.get_mcap(token_id)
+            token_mcap = await coingecko.get_mcap(token_id)
             if token_mcap == 0:
                 await update.message.reply_photo(
                     photo=tools.get_logo(),
@@ -135,7 +137,7 @@ async def compare(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
 
             else:
-                info = dextools.get_token_info(constants.CA)
+                info = await dextools.get_token_info(constants.CA)
                 mcap = info["mcap"]
                 percent = ((token_mcap - mcap) / mcap) * 100
                 x = (token_mcap - mcap) / mcap
@@ -251,7 +253,7 @@ async def holders(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    info = dextools.get_token_info(constants.CA)
+    info = await dextools.get_token_info(constants.CA)
     holders = info["holders"]
     await update.message.reply_photo(
         photo=tools.get_logo(),
@@ -292,13 +294,13 @@ async def liquidity(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if isinstance(constants.PAIR, list):
         for pair in constants.PAIR:
-            liquidity_data = dextools.get_liquidity(pair)
+            liquidity_data = await dextools.get_liquidity(pair)
             token_liq = float(liquidity_data["mainToken"])
             weth_liq = float(liquidity_data["sideToken"])
             liq += liquidity_data["liquidity"]
             total_token += token_liq
             total_eth += weth_liq
-            dex = dextools.get_dex(pair)
+            dex = await dextools.get_dex(pair)
 
             liq_text += (
                 f"{dex} pair\n"
@@ -321,12 +323,12 @@ async def liquidity(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     else:
-        liquidity_data = dextools.get_liquidity(constants.PAIR)
+        liquidity_data = await dextools.get_liquidity(constants.PAIR)
         token_liq = float(liquidity_data["mainToken"])
         weth_liq = float(liquidity_data["sideToken"])
         liq = liquidity_data["liquidity"]
 
-        dex = dextools.get_dex(constants.PAIR)
+        dex = await dextools.get_dex(constants.PAIR)
         liq_text += (
             f"{dex} pair\n"
             f"{token_liq:,.0f} {constants.TICKER.upper()}\n"
@@ -366,7 +368,7 @@ async def mcap(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="Markdown",
         )
         return
-    info = dextools.get_token_info(constants.CA)
+    info = await dextools.get_token_info(constants.CA)
     mcap = info["mcap"]
     if mcap:
         formatted_mcap = "${:,.0f}".format(mcap)
@@ -401,11 +403,11 @@ async def media_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def nft(update: Update, context: ContextTypes.DEFAULT_TYPE):
     id = " ".join(context.args)
-    data = opensea.get_collection(constants.NFT_SLUG)
+    data = await opensea.get_collection(constants.NFT_SLUG)
     minted = data["total_supply"]
     if id == "":
-        stats = opensea.get_collection_stats(constants.NFT_SLUG)
-        price = etherscan.get_native_price(constants.CHAIN_NATIVE.lower())
+        stats = await opensea.get_collection_stats(constants.NFT_SLUG)
+        price = await etherscan.get_native_price(constants.CHAIN_NATIVE.lower())
         owners = stats["total"]["num_owners"]
 
         floor = stats["total"]["floor_price"]
@@ -495,15 +497,15 @@ async def price(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="Markdown",
         )
         return
-    info = dextools.get_token_info(constants.CA)
+    info = await dextools.get_token_info(constants.CA)
     mcap = info["mcap"]
     holders = info["holders"]
-    price, price_change = dextools.get_price(constants.CA)
+    price, price_change = await dextools.get_price(constants.CA)
     if price:
         price = price
     else:
         price = "N/A"
-    volume = float(dextools.get_volume(constants.PAIR))
+    volume = float(await dextools.get_volume(constants.PAIR))
     if volume == "0.0":
         volume = "N/A"
     else:
@@ -549,14 +551,14 @@ async def tax(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def treasury(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    native_price = etherscan.get_native_price(constants.CHAIN_NATIVE.lower())
-    eth_raw = etherscan.get_native_balance(constants.TREASURY)
+    native_price = await etherscan.get_native_price(constants.CHAIN_NATIVE.lower())
+    eth_raw = await etherscan.get_native_balance(constants.TREASURY)
     eth = round(float(eth_raw), 2)
     eth_dollar = float(eth) * float(native_price)
-    balance = etherscan.get_token_balance(
+    balance = await etherscan.get_token_balance(
         constants.TREASURY, constants.CA, constants.DECIMALS
     )
-    price, _ = dextools.get_price(constants.CA)
+    price, _ = await dextools.get_price(constants.CA)
     if price:
         price = price
     else:
@@ -564,7 +566,7 @@ async def treasury(update: Update, context: ContextTypes.DEFAULT_TYPE):
     token_dollar = float(balance) * float(price)
     percent = round(balance / constants.SUPPLY * 100, 2)
     total = token_dollar + eth_dollar
-    txs = etherscan.get_daily_tx_count(constants.TREASURY)
+    txs = await etherscan.get_daily_tx_count(constants.TREASURY)
 
     await update.message.reply_photo(
         photo=tools.get_logo(),
@@ -603,18 +605,20 @@ async def wallet(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not wallet.startswith("0x"):
         await update.message.reply_text("Please use /wallet [wallet_address]")
         return
-    native_price = etherscan.get_native_price(constants.CHAIN_NATIVE.lower())
-    eth = etherscan.get_native_balance(wallet, constants.CHAIN)
+    native_price = await etherscan.get_native_price(constants.CHAIN_NATIVE.lower())
+    eth = await etherscan.get_native_balance(wallet, constants.CHAIN)
     eth_dollar = float(eth) * float(native_price)
-    balance = etherscan.get_token_balance(wallet, constants.CA, constants.DECIMALS)
-    price, _ = dextools.get_price(constants.CA)
+    balance = await etherscan.get_token_balance(
+        wallet, constants.CA, constants.DECIMALS
+    )
+    price, _ = await dextools.get_price(constants.CA)
     if price:
         price = price
     else:
         price = 0
     token_dollar = float(balance) * float(price)
     percent = round(balance / constants.SUPPLY * 100, 2)
-    txs = etherscan.get_daily_tx_count(wallet)
+    txs = await etherscan.get_daily_tx_count(wallet)
     await update.message.reply_photo(
         photo=tools.get_logo(),
         caption=f"*{constants.PROJECT_NAME} Wallet Info*\n\n"

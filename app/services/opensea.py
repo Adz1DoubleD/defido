@@ -1,5 +1,5 @@
 import os
-import requests
+import aiohttp
 
 
 class Opensea:
@@ -7,22 +7,23 @@ class Opensea:
         self.url = "https://api.opensea.io/api/v2/"
         self.headers = {"X-API-KEY": os.getenv("OPENSEA_API_KEY")}
 
-    def get_collection(self, slug):
+    async def make_request(self, endpoint: str):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                self.url + endpoint, headers=self.headers
+            ) as response:
+                if response.status == 200:
+                    return await response.json()
+                return None
+
+    async def get_collection(self, slug):
         endpoint = f"collections/{slug}"
-        response = requests.get(self.url + endpoint, headers=self.headers)
-        data = response.json()
-        return data
+        return await self.make_request(endpoint)
 
-    def get_nft_id(self, nft, id, chain):
+    async def get_nft_id(self, nft, id, chain):
         endpoint = f"chain/{chain}/contract/{nft}/nfts/{id}"
+        return await self.make_request(endpoint)
 
-        response = requests.get(self.url + endpoint, headers=self.headers)
-        data = response.json()
-        return data
-
-    def get_collection_stats(self, slug):
+    async def get_collection_stats(self, slug):
         endpoint = f"collections/{slug}/stats"
-
-        response = requests.get(self.url + endpoint, headers=self.headers)
-        data = response.json()
-        return data
+        return await self.make_request(endpoint)

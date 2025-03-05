@@ -1,15 +1,13 @@
 from telegram import Message, Update
-from telegram.ext import ApplicationBuilder, CallbackContext, CommandHandler
+from telegram.ext import Application, CallbackContext, CommandHandler
 
-from pathlib import Path
-import sys
-import subprocess
+
 import os
 
 from bot.commands import custom, project, utility
 from utils import tools
 
-application = ApplicationBuilder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
+application = Application.builder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
 
 
 async def error(update: Update, context: CallbackContext):
@@ -27,6 +25,7 @@ async def error(update: Update, context: CallbackContext):
 
 
 def init_main_bot():
+    print("🔄 Initializing main bot...")
     application.add_error_handler(error)
 
     for cmd, handler, _ in custom.HANDLERS:
@@ -38,33 +37,19 @@ def init_main_bot():
     for cmd, handler, _ in utility.HANDLERS:
         application.add_handler(CommandHandler(cmd, handler))
 
-
-def init_scanner_bot():
-    python_executable = sys.executable
-    script_path = Path(__file__).parent / "scanner.py"
-
-    if script_path.exists():
-        command = [python_executable, str(script_path)]
-        process = subprocess.Popen(command)
-        return process
-    else:
-        print(f"Error: {script_path} not found")
+    print("✅ Main bot initialized")
 
 
-def start():
-    init_main_bot()
-
+async def post_init(application: Application):
     if not tools.is_local():
         print("✅ Bot Running on server")
-        print(tools.update_bot_commands())
-
-        init_scanner_bot()
+        print(await tools.update_bot_commands())
 
     else:
         print("✅ Bot Running locally")
 
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
-
 
 if __name__ == "__main__":
-    start()
+    init_main_bot()
+    application.post_init = post_init
+    application.run_polling(allowed_updates=Update.ALL_TYPES)

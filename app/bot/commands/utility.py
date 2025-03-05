@@ -1,12 +1,11 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, ContextTypes
 
+import aiohttp
 import io
-
 import pytz
 import random
 import re
-import requests
 import time
 from datetime import datetime
 
@@ -16,6 +15,7 @@ from gtts import gTTS
 
 from utils import tools
 from services import get_etherscan
+
 
 etherscan = get_etherscan()
 
@@ -41,7 +41,7 @@ async def ascii(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def blocks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     now = round(time.time())
-    blocks_time = etherscan.get_block(now)
+    blocks_time = await etherscan.get_block(now)
     await update.message.reply_photo(
         photo=tools.get_logo(),
         caption=f"*Latest {constants.CHAIN.upper()} Block *\n\n{blocks_time}\n\n",
@@ -95,39 +95,49 @@ async def coinflip(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def fg(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    fear_response = requests.get("https://api.alternative.me/fng/?limit=0")
-    fear_data = fear_response.json()
-    fear_values = []
-    for i in range(7):
-        timestamp = float(fear_data["data"][i]["timestamp"])
-        localtime = datetime.fromtimestamp(timestamp)
-        fear_values.append(
-            (
-                fear_data["data"][i]["value"],
-                fear_data["data"][i]["value_classification"],
-                localtime,
-            )
-        )
-    duration_in_s = float(fear_data["data"][0]["time_until_update"])
-    days, remainder = divmod(duration_in_s, 86400)
-    hours, remainder = divmod(remainder, 3600)
-    minutes, _ = divmod(remainder, 60)
-    caption = "*Market Fear and Greed Index*\n\n"
-    caption += f"{fear_values[0][0]} - {fear_values[0][1]} - {fear_values[0][2].strftime('%B %d')}\n\n"
-    caption += "Change:\n"
-    for i in range(1, 7):
-        caption += f"{fear_values[i][0]} - {fear_values[i][1]} - {fear_values[i][2].strftime('%B %d')}\n"
-    caption += "\nNext Update:\n"
-    caption += f"{int(hours)} hours and {int(minutes)} minutes"
-    await update.message.reply_photo(
-        photo=f"https://alternative.me/crypto/fear-and-greed-index.png?timestamp={int(time.time())}",
-        caption=caption,
-        parse_mode="Markdown",
-    )
+    async with aiohttp.ClientSession() as session:
+        async with session.get("https://api.alternative.me/fng/?limit=0") as response:
+            if response.status == 200:
+                fear_data = await response.json()
+                fear_values = []
+
+                for i in range(7):
+                    timestamp = float(fear_data["data"][i]["timestamp"])
+                    localtime = datetime.fromtimestamp(timestamp)
+                    fear_values.append(
+                        (
+                            fear_data["data"][i]["value"],
+                            fear_data["data"][i]["value_classification"],
+                            localtime,
+                        )
+                    )
+
+                duration_in_s = float(fear_data["data"][0]["time_until_update"])
+                days, remainder = divmod(duration_in_s, 86400)
+                hours, remainder = divmod(remainder, 3600)
+                minutes, _ = divmod(remainder, 60)
+
+                caption = "*Market Fear and Greed Index*\n\n"
+                caption += f"{fear_values[0][0]} - {fear_values[0][1]} - {fear_values[0][2].strftime('%B %d')}\n\n"
+                caption += "Change:\n"
+                for i in range(1, 7):
+                    caption += f"{fear_values[i][0]} - {fear_values[i][1]} - {fear_values[i][2].strftime('%B %d')}\n"
+                caption += "\nNext Update:\n"
+                caption += f"{int(hours)} hours and {int(minutes)} minutes"
+
+                await update.message.reply_photo(
+                    photo=f"https://alternative.me/crypto/fear-and-greed-index.png?timestamp={int(time.time())}",
+                    caption=caption,
+                    parse_mode="Markdown",
+                )
+            else:
+                await update.message.reply_text(
+                    "Failed to fetch Fear & Greed Index data"
+                )
 
 
 async def gas(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    gas_data = etherscan.get_gas()
+    gas_data = await etherscan.get_gas()
     await update.message.reply_photo(
         photo=tools.get_logo(),
         caption=f"*ETH Gas Prices:*\n\n"
@@ -148,21 +158,25 @@ async def gas(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def joke(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    joke_response = requests.get("https://v2.jokeapi.dev/joke/Any?safe-mode")
-    joke = joke_response.json()
-    if joke["type"] == "single":
-        await update.message.reply_photo(
-            photo=tools.get_logo(),
-            caption=f"{constants.PROJECT_NAME} Joke\n\n{joke['joke']}\n\n",
-            parse_mode="Markdown",
-        )
-    else:
-        await update.message.reply_photo(
-            photo=tools.get_logo(),
-            caption=f"{constants.PROJECT_NAME} Joke\n\n"
-            f"{joke['setup']}\n\n{joke['delivery']}\n\n",
-            parse_mode="Markdown",
-        )
+    async with aiohttp.ClientSession() as session:
+        async with session.get("https://v2.jokeapi.dev/joke/Any?safe-mode") as response:
+            if response.status == 200:
+                joke = await response.json()
+                if joke["type"] == "single":
+                    await update.message.reply_photo(
+                        photo=tools.get_logo(),
+                        caption=f"{constants.PROJECT_NAME} Joke\n\n{joke['joke']}\n\n",
+                        parse_mode="Markdown",
+                    )
+                else:
+                    await update.message.reply_photo(
+                        photo=tools.get_logo(),
+                        caption=f"{constants.PROJECT_NAME} Joke\n\n"
+                        f"{joke['setup']}\n\n{joke['delivery']}\n\n",
+                        parse_mode="Markdown",
+                    )
+            else:
+                await update.message.reply_text("Failed to fetch joke")
 
 
 async def roll(update: Update, context: CallbackContext):

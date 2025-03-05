@@ -1,8 +1,8 @@
-from datetime import datetime
+import aiohttp
 import os
 import random
-import requests
 import socket
+from datetime import datetime
 
 from bot.commands import custom, project, utility
 from media import images
@@ -31,10 +31,15 @@ def escape_markdown(text):
     return text
 
 
-def get_fact():
-    response = requests.get("https://uselessfacts.jsph.pl/api/v2/facts/random")
-    quote = response.json()
-    return quote["text"]
+async def get_fact():
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            "https://uselessfacts.jsph.pl/api/v2/facts/random"
+        ) as response:
+            if response.status == 200:
+                quote = await response.json()
+                return quote["text"]
+            return "Failed to get a random fact."
 
 
 def get_logo():
@@ -42,58 +47,64 @@ def get_logo():
     return random_logo
 
 
-def get_today():
+async def get_today():
     now = datetime.now()
     url = f"https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/{now.month}/{now.day}"
 
-    response = requests.get(url)
-    data = response.json()
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status == 200:
+                data = await response.json()
 
-    if (
-        "selected" in data
-        and isinstance(data["selected"], list)
-        and len(data["selected"]) > 0
-    ):
-        random_event = random.choice(data["selected"])
+                if (
+                    "selected" in data
+                    and isinstance(data["selected"], list)
+                    and len(data["selected"]) > 0
+                ):
+                    random_event = random.choice(data["selected"])
 
-        event_text = random_event.get("text", "No description available.")
-        year = random_event.get("year", "Unknown Year")
+                    event_text = random_event.get("text", "No description available.")
+                    year = random_event.get("year", "Unknown Year")
 
-        event_pages = random_event.get("pages", [])
-        wiki_url = (
-            event_pages[0]["content_urls"]["desktop"]["page"]
-            if event_pages
-            else "No link available."
-        )
+                    event_pages = random_event.get("pages", [])
+                    wiki_url = (
+                        event_pages[0]["content_urls"]["desktop"]["page"]
+                        if event_pages
+                        else "No link available."
+                    )
 
-        return f"📅 *{year}*: {event_text}\n🔗 [Read more]({wiki_url})"
+                    return f"📅 *{year}*: {event_text}\n🔗 [Read more]({wiki_url})"
 
-    return "⚠️ No historical events found for today."
+            return "⚠️ No historical events found for today."
 
 
-def get_word(word):
+async def get_word(word):
     url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}"
-    response = requests.get(url)
-    data = response.json()
 
-    definition = None
-    audio_url = None
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status == 200:
+                data = await response.json()
 
-    if data and isinstance(data, list):
-        meanings = data[0].get("meanings", [])
-        if meanings:
-            for meaning in meanings:
-                definitions = meaning.get("definitions", [])
-                if definitions:
-                    definition = definitions[0].get("definition")
-                    break
+                definition = None
+                audio_url = None
 
-        phonetics = data[0].get("phonetics", [])
-        if phonetics:
-            first_phonetic = phonetics[0]
-            audio_url = first_phonetic.get("audio")
+                if data and isinstance(data, list):
+                    meanings = data[0].get("meanings", [])
+                    if meanings:
+                        for meaning in meanings:
+                            definitions = meaning.get("definitions", [])
+                            if definitions:
+                                definition = definitions[0].get("definition")
+                                break
 
-    return definition, audio_url
+                    phonetics = data[0].get("phonetics", [])
+                    if phonetics:
+                        first_phonetic = phonetics[0]
+                        audio_url = first_phonetic.get("audio")
+
+                return definition, audio_url
+            return None, None
 
 
 def is_local():
@@ -110,7 +121,7 @@ def timestamp_to_datetime(timestamp):
         return "Invalid timestamp."
 
 
-def update_bot_commands():
+async def update_bot_commands():
     url = f"https://api.telegram.org/bot{os.getenv('TELEGRAM_BOT_TOKEN')}/setMyCommands"
 
     all_commands = [
@@ -122,11 +133,12 @@ def update_bot_commands():
         for cmd, _, desc in handlers
     ]
 
-    response = requests.post(
-        url, json={"commands": all_commands, "scope": {"type": "default"}}
-    )
-
-    if response.status_code == 200:
-        return "✅ Commands updated successfully."
-    else:
-        return f"⚠️ Failed to update bot commands: {response.text}"
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            url, json={"commands": all_commands, "scope": {"type": "default"}}
+        ) as response:
+            if response.status == 200:
+                return "✅ Commands updated successfully."
+            else:
+                response_text = await response.text()
+                return f"⚠️ Failed to update bot commands: {response_text}"
