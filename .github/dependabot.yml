@@ -14,10 +14,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    labels:
-      - "dependencies"
-      - "github-actions"
-      - "automerge"
     commit-message:
       prefix: "ci"
       include: "scope"
