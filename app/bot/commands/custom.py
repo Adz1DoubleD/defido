@@ -57,11 +57,20 @@ async def rpc(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def tweet(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_photo(
+        photo=tools.get_logo(),
+        caption=f"*{constants.PROJECT_NAME} Tweet\n\nhttps://x.com/coinbase/status/1437511766510956545",
+        parse_mode="Markdown",
+    )
+
+
 HANDLERS = [
     (func.__name__.split("_")[0], func, description)
     for func, description in [
         (bridge, "Bridge links"),
         (guide, "FAQs"),
         (rpc, "RPC info"),
+        (tweet, "Tweet"),
     ]
 ]
