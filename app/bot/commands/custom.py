@@ -60,7 +60,7 @@ async def rpc(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def tweet(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_photo(
         photo=tools.get_logo(),
-        caption=f"*{constants.PROJECT_NAME} Tweet\n\nhttps://x.com/coinbase/status/1437511766510956545",
+        caption=f"*{constants.PROJECT_NAME} Tweet*\n\nhttps://x.com/coinbase/status/1437511766510956545",
         parse_mode="Markdown",
     )
 
